@@ -1,48 +1,50 @@
 const barcodeElement = document.getElementById('barcode');
 const userInput = document.getElementById('user-input');
-const sendBtn = document.getElementById('send-btn');
 const chatHistory = document.getElementById('chat-history');
 
+// آرایه لینک‌های توییتر (مثال)
 const twitterPosts = [
     "https://twitter.com/elonmusk/status/1234567890", 
     "https://twitter.com/nasa/status/2345678901", 
     "https://twitter.com/cryptomoon/status/3456789012"
 ];
 
-// Function to update barcode every 5 seconds with a new tweet link
+// به‌روزرسانی بارکد هر 5 ثانیه
 function updateBarcode() {
     const randomIndex = Math.floor(Math.random() * twitterPosts.length);
     barcodeElement.style.backgroundImage = `url('https://api.qrserver.com/v1/create-qr-code/?data=${twitterPosts[randomIndex]}&size=250x250')`;
 }
 
-// Set interval to change the barcode every 5 seconds
+// تغییر بارکد هر 5 ثانیه
 setInterval(updateBarcode, 5000);
 
-// Send message to chatbot
-sendBtn.addEventListener('click', async () => {
-    const message = userInput.value;
-    if (message) {
-        // Display the user's message
-        chatHistory.innerHTML += `<div>User: ${message}</div>`;
+// ارسال پیام با زدن Enter
+userInput.addEventListener('keydown', async (event) => {
+    if (event.key === 'Enter') {
+        const message = userInput.value;
+        if (message) {
+            // نمایش پیام کاربر
+            chatHistory.innerHTML += `<div>User: ${message}</div>`;
 
-        // Get chatbot response
-        const response = await getChatbotResponse(message);
-        chatHistory.innerHTML += `<div>Bot: ${response}</div>`;
-        userInput.value = ''; // Clear input field
-        chatHistory.scrollTop = chatHistory.scrollHeight; // Scroll to bottom
+            // دریافت پاسخ از چت‌بات
+            const response = await getChatbotResponse(message);
+            chatHistory.innerHTML += `<div>Bot: ${response}</div>`;
+            userInput.value = ''; // پاک کردن فیلد ورودی
+            chatHistory.scrollTop = chatHistory.scrollHeight; // اسکرول به پایین
+        }
     }
 });
 
-// Fetch chatbot response from OpenAI API
+// دریافت پاسخ چت‌بات از API OpenAI
 async function getChatbotResponse(message) {
-    const apiKey = 'your-openai-api-key';
+    const apiKey = 'your-openai-api-key'; // کلید API خودتون رو وارد کنید
     const url = 'https://api.openai.com/v1/completions';
     const headers = {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${apiKey}`
     };
     const body = JSON.stringify({
-        model: 'text-davinci-003', // or any other OpenAI model you prefer
+        model: 'text-davinci-003', // یا هر مدل دیگه‌ای که بخواهید
         prompt: message,
         max_tokens: 150,
     });
@@ -61,5 +63,5 @@ async function getChatbotResponse(message) {
     }
 }
 
-// Initial call to update barcode
+// به‌روزرسانی اولیه بارکد
 updateBarcode();
